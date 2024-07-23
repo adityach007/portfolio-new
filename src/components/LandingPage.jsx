@@ -12,7 +12,7 @@ import ContactSection from './ContactSection';
 import Footer from './Footer';
 
 // Initialize the Gemini AI
-const genAI = new GoogleGenerativeAI('AIzaSyDPmyw72EXLnUhQH3wgrSi4aQVFfgNcaZE');
+const genAI = new GoogleGenerativeAI('ENTER YOUR API KEY');
 
 const ChatMessage = ({ message, isUser }) => (
   <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
