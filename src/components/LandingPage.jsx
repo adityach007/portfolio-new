@@ -130,7 +130,7 @@ const LandingPage = () => {
       id: 1,
       title: "Github-App",
       description: "A look like github app performing some great features.",
-      image: "src/assets/github/github.svg",
+      image: "public/images/github.svg",
       category: "Web Development",
       technologies: ["React", "Node.js", "Express", "MongoDB", "Passport.js"],
       features: [
@@ -140,18 +140,18 @@ const LandingPage = () => {
       ],
       liveDemo: "",
       sourceCode: "https://github.com/adityach007/github-app",
-      demoVideo: "src/assets/github/Github-app.mp4",
+      demoVideo: "public/images/Github-app.mp4",
       images: [
-        "src/assets/github/github1.png",
-        "src/assets/github/github2.png",
-        "src/assets/github/github3.png"
+        "public/images/github1.png",
+        "public/images/github2.png",
+        "public/images/github3.png"
       ]
     },
     {
       id: 2,
       title: "InfiUse",
       description: "A multi-functional LLM.",
-      image: "src/assets/llm/coding.svg",
+      image: "public/images/coding.svg",
       category: "Web Development",
       technologies: ["Python", "Streamlit", "Groq", "LangChain", "Codestral", "Streamlit Ace" ],
       features: [
@@ -171,7 +171,7 @@ const LandingPage = () => {
       id: 3,
       title: "Fine-Tuning for Abstractive Text Summarization",
       description: "Developed text summarization project using Transformers.",
-      image: "src/assets/text/transformers.svg",
+      image: "public/images/transformers.svg",
       category: "Web Development",
       technologies: ["Hugging Face", "PyTorch", "NLTK", "Py7zr"],
       features: [
