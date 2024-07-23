@@ -158,7 +158,7 @@ const AboutSection = () => {
                     I'm a passionate web developer and machine learning enthusiast with a keen eye for creating intuitive and dynamic user experiences. With a strong foundation in both front-end and back-end technologies, I love bringing ideas to life in the digital world. My expertise spans across the MERN stack, and I'm always eager to learn and apply new technologies to solve complex problems.
                   </p>
                   <motion.a 
-                    href="public/images/Aditya_Choudhary (1).pdf" 
+                    href="/images/Aditya_Choudhary (1).pdf" 
                     className="bg-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-700 transition duration-300 inline-flex items-center"
                     whileHover={{ scale: 1.05, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
                     whileTap={{ scale: 0.95 }}
