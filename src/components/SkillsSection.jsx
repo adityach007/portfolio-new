@@ -139,7 +139,6 @@ const SkillsSection = () => {
         { name: "SQL", level: 75 },
         { name: "MongoDB", level: 70 },
         { name: "Express.js", level: 80 },
-        { name: "Django", level: 70 },
       ],
       category: "Development"
     },
@@ -150,8 +149,6 @@ const SkillsSection = () => {
       skills: [
         { name: "Git", level: 85 },
         { name: "AWS", level: 75 },
-        { name: "Docker", level: 70 },
-        { name: "CI/CD", level: 80 },
       ],
       category: "DevOps"
     },
@@ -162,8 +159,8 @@ const SkillsSection = () => {
       skills: [
         { name: "Machine Learning", level: 95 },
         { name: "Deep Learning", level: 85},
-        { name: "NLP", level: 90},
-        { name: "LLM", level: 80}
+        { name: "NLP", level: 80},
+        { name: "LLM", level: 70}
       ],
       category: "Emerging"
     },
@@ -174,7 +171,6 @@ const SkillsSection = () => {
       skills: [
         { name: "Problem Solving", level: 90 },
         { name: "Team Collaboration", level: 95 },
-        { name: "Agile Methodologies", level: 85 },
         { name: "Technical Writing", level: 80 },
         { name: "Mentoring", level: 85 }
       ],
