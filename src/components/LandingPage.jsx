@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope, FaArrowUp } from 'react-icons/fa';
-import { ChevronDown, Send, Menu, X, MessageCircle } from 'lucide-react';
+import { ChevronDown, Send, Menu, X, MessageCircle, Loader } from 'lucide-react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import AboutSection from './AboutSection';
@@ -11,20 +11,33 @@ import ProjectPopup from './ProjectPopup';
 import ContactSection from './ContactSection';
 import Footer from './Footer';
 
+// Load the API key from .env file
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
 // Initialize the Gemini AI
-const genAI = new GoogleGenerativeAI('ENTER YOUR API KEY');
+let genAI;
+if (API_KEY) {
+  genAI = new GoogleGenerativeAI(API_KEY);
+} else {
+  console.error('Google API Key is not set. Please check your environment variables.');
+}
 
 const ChatMessage = ({ message, isUser }) => (
-  <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
-    <div className={`${isUser ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} rounded-lg py-2 px-4 max-w-[70%]`}>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
+  >
+    <div className={`${isUser ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} rounded-lg py-2 px-4 max-w-[70%] shadow-md`}>
       {message}
     </div>
-  </div>
+  </motion.div>
 );
 
 const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
@@ -35,10 +48,15 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
 
   const handleSend = async () => {
     if (input.trim() === '') return;
+    if (!genAI) {
+      setMessages(prev => [...prev, { text: "I'm sorry, the AI service is currently unavailable. Please try again later.", isUser: false }]);
+      return;
+    }
 
     const userMessage = input.trim();
     setMessages(prev => [...prev, { text: userMessage, isUser: true }]);
     setInput('');
+    setIsLoading(true);
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
@@ -56,6 +74,8 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
     } catch (error) {
       console.error('Error generating response:', error);
       setMessages(prev => [...prev, { text: "I'm sorry, I encountered an error. Please try again later.", isUser: false }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -68,12 +88,19 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
     >
       <div className="flex justify-between items-center bg-indigo-600 text-white p-4">
         <h3 className="font-semibold">Chat with AI Assistant</h3>
-        <button onClick={onClose}><X size={20} /></button>
+        <button onClick={onClose} className="hover:bg-indigo-700 p-1 rounded-full transition-colors duration-300">
+          <X size={20} />
+        </button>
       </div>
       <div ref={chatContainerRef} className="h-64 overflow-y-auto p-4">
         {messages.map((message, index) => (
           <ChatMessage key={index} message={message.text} isUser={message.isUser} />
         ))}
+        {isLoading && (
+          <div className="flex justify-center items-center">
+            <Loader className="animate-spin text-indigo-600" size={24} />
+          </div>
+        )}
       </div>
       <div className="p-4 border-t">
         <div className="flex">
@@ -87,9 +114,10 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
           />
           <button
             onClick={handleSend}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-r-lg hover:bg-indigo-700 transition duration-300"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-r-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50"
+            disabled={isLoading}
           >
-            <Send size={20} />
+            {isLoading ? <Loader className="animate-spin" size={20} /> : <Send size={20} />}
           </button>
         </div>
       </div>
@@ -139,8 +167,8 @@ const LandingPage = () => {
         "Provide facility to like user profile and explore Github repositories of languages and integrated with MongoDB."
       ],
       liveDemo: "",
-      sourceCode: "/images/Github-app.mp4",
-      demoVideo: "public/images/Github-app.mp4",
+      sourceCode: "https://github.com/adityach007/github-app",
+      demoVideo: "/images/Github-app.mp4",
       images: [
         "/images/github1.png",
         "/images/github2.png",
@@ -160,11 +188,12 @@ const LandingPage = () => {
       ],
       liveDemo: "https://infiuse-3.onrender.com/",
       sourceCode: "https://github.com/adityach007/InfiUse",
-      demoVideo: "https://example.com/ecommerce-demo.mp4",
+      demoVideo: "/images/llm-video.mp4",
       images: [
-        "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+1",
-        "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+2",
-        "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+3"
+        "/images/llm1.png",
+        "/images/llm2.png",
+        "/images/llm3.png",
+        "/images/llm4.png"
       ]
     },
     {
@@ -180,7 +209,7 @@ const LandingPage = () => {
       ],
       liveDemo: "",
       sourceCode: "https://github.com/adityach007/Gen_AI/tree/main/Pegasus%20Fine-Tuning%20for%20Abstractive%20Text%20Summarization",
-      demoVideo: "https://example.com/ecommerce-demo.mp4",
+      demoVideo: "",
       images: [
         "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+1",
         "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+2",
@@ -406,12 +435,20 @@ const LandingPage = () => {
         )}
       </AnimatePresence>
 
-      {/* Project Popup */}
+        {/* Project Popup */}
       <ProjectPopup
         project={selectedProject}
         isOpen={isPopupOpen}
         onClose={closePopup}
       />
+
+      {/* Error message if API key is not set */}
+      {!API_KEY && (
+        <div className="fixed bottom-4 left-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-50">
+          <p className="font-bold">Error: Google API Key is not set.</p>
+          <p>Please check your environment variables and restart the application.</p>
+        </div>
+      )}
     </div>
   );
 };
