@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiCode, HiDatabase, HiCog, HiChip, HiLightBulb, HiGlobe, HiArrowRight } from 'react-icons/hi';
+import { HiCode, HiDatabase, HiCog, HiChip, HiLightBulb, HiGlobe, HiArrowRight, HiX } from 'react-icons/hi';
 
 const SkillTag = ({ name, level }) => (
   <motion.span
-    className="bg-indigo-100 text-indigo-800 text-sm font-medium mr-2 mb-2 px-3 py-1 rounded-full inline-flex items-center"
+    className="bg-indigo-100 text-indigo-800 text-xs sm:text-sm font-medium mr-2 mb-2 px-2 sm:px-3 py-1 rounded-full inline-flex items-center"
     whileHover={{ scale: 1.1, backgroundColor: "#818cf8", color: "#ffffff" }}
     transition={{ type: "spring", stiffness: 500, damping: 30 }}
   >
     {name}
-    <span className="ml-2 w-2 h-2 rounded-full bg-indigo-500" style={{ opacity: level / 100 }}></span>
+    <span className="ml-2 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-indigo-500" style={{ opacity: level / 100 }}></span>
   </motion.span>
 );
 
@@ -18,7 +18,7 @@ const SkillCard = ({ icon: Icon, title, skills, description }) => {
 
   return (
     <motion.div
-      className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer perspective h-full"
+      className="bg-white p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer perspective h-full"
       whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
       onClick={() => setIsFlipped(!isFlipped)}
     >
@@ -33,17 +33,17 @@ const SkillCard = ({ icon: Icon, title, skills, description }) => {
             className="h-full flex flex-col"
           >
             <div className="flex items-center mb-4">
-              <Icon className="text-4xl text-indigo-600 mr-3" />
-              <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+              <Icon className="text-3xl sm:text-4xl text-indigo-600 mr-3" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800">{title}</h3>
             </div>
-            <p className="text-gray-600 mb-4 flex-grow">{description}</p>
+            <p className="text-sm sm:text-base text-gray-600 mb-4 flex-grow">{description}</p>
             <div className="flex flex-wrap mt-auto">
               {skills.slice(0, 3).map((skill, index) => (
                 <SkillTag key={index} name={skill.name} level={skill.level} />
               ))}
               {skills.length > 3 && (
                 <motion.button 
-                  className="text-indigo-600 font-medium flex items-center"
+                  className="text-indigo-600 font-medium text-sm sm:text-base flex items-center"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={(e) => {
@@ -66,7 +66,7 @@ const SkillCard = ({ icon: Icon, title, skills, description }) => {
             transition={{ duration: 0.3 }}
             className="h-full flex flex-col"
           >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">{title} Skills</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">{title} Skills</h3>
             <ul className="space-y-3 flex-grow">
               {skills.map((skill, index) => (
                 <motion.li 
@@ -77,12 +77,12 @@ const SkillCard = ({ icon: Icon, title, skills, description }) => {
                   transition={{ delay: index * 0.1 }}
                 >
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-gray-700 font-medium">{skill.name}</span>
-                    <span className="text-indigo-600 font-semibold">{skill.level}%</span>
+                    <span className="text-sm sm:text-base text-gray-700 font-medium">{skill.name}</span>
+                    <span className="text-sm sm:text-base text-indigo-600 font-semibold">{skill.level}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                  <div className="w-full bg-gray-200 rounded-full h-2 sm:h-2.5 overflow-hidden">
                     <motion.div 
-                      className="bg-indigo-600 h-2.5 rounded-full"
+                      className="bg-indigo-600 h-full rounded-full"
                       initial={{ width: 0 }}
                       animate={{ width: `${skill.level}%` }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -92,7 +92,7 @@ const SkillCard = ({ icon: Icon, title, skills, description }) => {
               ))}
             </ul>
             <motion.button
-              className="mt-4 text-indigo-600 font-medium flex items-center justify-center"
+              className="mt-4 text-indigo-600 font-medium text-sm sm:text-base flex items-center justify-center"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={(e) => {
@@ -113,6 +113,7 @@ const SkillCard = ({ icon: Icon, title, skills, description }) => {
 const SkillsSection = () => {
   const [filter, setFilter] = useState('All');
   const [animateFilter, setAnimateFilter] = useState(false);
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
   const skillsData = [
     {
@@ -189,24 +190,57 @@ const SkillsSection = () => {
     return () => clearTimeout(timer);
   }, [filter]);
 
+  const categories = ['All', 'Development', 'DevOps', 'Emerging', 'Soft Skills'];
+
   return (
-    <section id="skills" className="bg-gradient-to-b from-indigo-50 to-white py-20">
-      <div className="container mx-auto px-4">
+    <section id="skills" className="bg-gradient-to-b from-indigo-50 to-white py-16 sm:py-20">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-5xl font-bold text-gray-800 mb-6">My Skillset</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4 sm:mb-6">My Skillset</h2>
+          <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-10">
             Combining a diverse range of technical skills with a passion for innovation and problem-solving to deliver exceptional web solutions.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 mb-10">
-            {['All', 'Development', 'DevOps', 'Emerging', 'Soft Skills'].map((category) => (
+          <div className="relative">
+            <button
+              className="md:hidden bg-indigo-600 text-white px-4 py-2 rounded-full font-semibold text-lg mb-4"
+              onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+            >
+              {filter} Skills {isFilterMenuOpen ? <HiX className="inline ml-2" /> : <HiArrowRight className="inline ml-2" />}
+            </button>
+            <AnimatePresence>
+              {isFilterMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="absolute z-10 bg-white shadow-lg rounded-lg py-2 left-1/2 transform -translate-x-1/2 w-64"
+                >
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      className={`block w-full text-left px-4 py-2 ${filter === category ? 'bg-indigo-100 text-indigo-600' : 'text-gray-800'}`}
+                      onClick={() => {
+                        setFilter(category);
+                        setIsFilterMenuOpen(false);
+                      }}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className="hidden md:flex flex-wrap justify-center gap-4 mb-10">
+            {categories.map((category) => (
               <motion.button
                 key={category}
-                className={`px-6 py-3 rounded-full text-lg font-semibold transition-all duration-300 ${filter === category ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full text-base sm:text-lg font-semibold transition-all duration-300 ${filter === category ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
                 onClick={() => setFilter(category)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -217,7 +251,7 @@ const SkillsSection = () => {
           </div>
         </motion.div>
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
           initial="hidden"
           animate="visible"
           variants={{
@@ -231,7 +265,7 @@ const SkillsSection = () => {
           }}
         >
           <AnimatePresence mode="wait">
-            {filteredSkills.map((category, index) => (
+            {filteredSkills.map((category) => (
               <motion.div
                 key={category.title}
                 variants={{
@@ -251,7 +285,7 @@ const SkillsSection = () => {
         </motion.div>
         {animateFilter && (
           <motion.div
-            className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-6 py-3 rounded-full shadow-lg"
+            className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-indigo-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg text-sm sm:text-base"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}

@@ -61,7 +61,7 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
 
   return (
     <motion.div
-      className="fixed bottom-24 right-8 w-80 h-96 bg-white rounded-lg shadow-lg overflow-hidden z-50"
+      className="fixed bottom-24 right-4 sm:right-8 w-11/12 sm:w-96 h-96 bg-white rounded-lg shadow-lg overflow-hidden z-50"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
@@ -130,7 +130,7 @@ const LandingPage = () => {
       id: 1,
       title: "Github-App",
       description: "A look like github app performing some great features.",
-      image: "public/images/github.svg",
+      image: "/images/github.svg",
       category: "Web Development",
       technologies: ["React", "Node.js", "Express", "MongoDB", "Passport.js"],
       features: [
@@ -139,19 +139,19 @@ const LandingPage = () => {
         "Provide facility to like user profile and explore Github repositories of languages and integrated with MongoDB."
       ],
       liveDemo: "",
-      sourceCode: "https://github.com/adityach007/github-app",
+      sourceCode: "/images/Github-app.mp4",
       demoVideo: "public/images/Github-app.mp4",
       images: [
-        "public/images/github1.png",
-        "public/images/github2.png",
-        "public/images/github3.png"
+        "/images/github1.png",
+        "/images/github2.png",
+        "/images/github3.png"
       ]
     },
     {
       id: 2,
       title: "InfiUse",
       description: "A multi-functional LLM.",
-      image: "public/images/coding.svg",
+      image: "/images/coding.svg",
       category: "Web Development",
       technologies: ["Python", "Streamlit", "Groq", "LangChain", "Codestral", "Streamlit Ace" ],
       features: [
@@ -171,7 +171,7 @@ const LandingPage = () => {
       id: 3,
       title: "Fine-Tuning for Abstractive Text Summarization",
       description: "Developed text summarization project using Transformers.",
-      image: "public/images/transformers.svg",
+      image: "/images/transformers.svg",
       category: "Web Development",
       technologies: ["Hugging Face", "PyTorch", "NLTK", "Py7zr"],
       features: [
@@ -253,7 +253,7 @@ const LandingPage = () => {
     <div className="bg-gradient-to-b from-indigo-100 to-purple-200 min-h-screen">
       {/* Navigation */}
       <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
-        <div className="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div className="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
           <a className="font-bold text-2xl text-indigo-600" href="#" onClick={() => scrollToSection('home')}>AC</a>
           <div className="hidden md:flex space-x-6">
             {navItems.map((item) => (
@@ -303,9 +303,9 @@ const LandingPage = () => {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <header id="home" className="container mx-auto px-6 py-32 text-center">
+      <header id="home" className="container mx-auto px-4 sm:px-6 py-32 text-center">
         <motion.h1 
-          className="text-5xl md:text-6xl font-bold mb-4 text-gray-800"
+          className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-gray-800"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -313,7 +313,7 @@ const LandingPage = () => {
           Hi, I'm <span className="text-indigo-600">Aditya Choudhary</span>
         </motion.h1>
         <motion.p 
-          className="text-xl md:text-2xl mb-8 text-gray-600"
+          className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-600"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -326,7 +326,7 @@ const LandingPage = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <motion.button 
-            className="bg-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-indigo-700 transition duration-300"
+            className="bg-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-lg hover:bg-indigo-700 transition duration-300"
             onClick={() => scrollToSection('contact')}
             whileHover={{ scale: 1.05, boxShadow: "0px 5px 15px rgba(0,0,0,0.1)" }}
             whileTap={{ scale: 0.95 }}
@@ -353,30 +353,23 @@ const LandingPage = () => {
         </motion.div>
       </header>
 
-      {/* About Section */}
+      {/* Other Sections */}
       <section id="about">
         <AboutSection />
       </section>
-
-      {/* Skills Section */}
       <section id="skills">
         <SkillsSection />
       </section>
-
-      {/* Projects Section */}
       <section id="projects">
         <ProjectsSection 
           projects={projects}
           handleProjectClick={handleProjectClick}
         />
       </section>
-
-      {/* Contact Section */}
       <section id="contact">
         <ContactSection />
       </section>
 
-      {/* Footer */}
       <Footer />
 
       {/* Scroll to Top Button */}
@@ -386,7 +379,7 @@ const LandingPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-8 right-8 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-50"
+            className="fixed bottom-24 sm:bottom-8 right-4 sm:right-8 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-50"
             onClick={scrollToTop}
             whileHover={{ scale: 1.1, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
             whileTap={{ scale: 0.9 }}
@@ -398,7 +391,7 @@ const LandingPage = () => {
 
       {/* Chat Bot Button */}
       <motion.button
-        className="fixed bottom-8 left-8 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-50"
+        className="fixed bottom-8 left-4 sm:left-8 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-50"
         onClick={() => setIsChatOpen(!isChatOpen)}
         whileHover={{ scale: 1.1, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
         whileTap={{ scale: 0.9 }}
