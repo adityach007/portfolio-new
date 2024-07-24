@@ -1,6 +1,116 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Play, Pause, ChevronLeft, ChevronRight, Code, Star, Info, Image } from 'lucide-react';
+import { X, ExternalLink, Play, Pause, ChevronLeft, ChevronRight, Code, Star, Info, Image, MessageCircle, Loader } from 'lucide-react';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Initialize the Gemini AI
+const API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+let genAI;
+if (API_KEY) {
+  genAI = new GoogleGenerativeAI(API_KEY);
+} else {
+  console.error('Google API Key is not set. Please check your environment variables.');
+}
+
+// Demo projects data
+const demoProjects = [
+  {
+    id: 1,
+    title: "Github-App",
+    description: "A look like github app performing some great features.",
+    image: "/images/github.svg",
+    category: "Web Development",
+    technologies: ["React", "Node.js", "Express", "MongoDB", "Passport.js"],
+    features: [
+      "Implemented Github like app with authenticated with Github using passport.js.",
+      "Facility to view the user profile with all their repositories.",
+      "Provide facility to like user profile and explore Github repositories of languages and integrated with MongoDB."
+    ],
+    liveDemo: "",
+    sourceCode: "https://github.com/adityach007/github-app",
+    demoVideo: "/images/Github-app.mp4",
+    images: [
+      "/images/github1.png",
+      "/images/github2.png",
+      "/images/github3.png"
+    ]
+  },
+  {
+    id: 2,
+    title: "InfiUse",
+    description: "A multi-functional LLM.",
+    image: "/images/coding.svg",
+    category: "Web Development",
+    technologies: ["Python", "Streamlit", "Groq", "LangChain", "Codestral", "Streamlit Ace" ],
+    features: [
+      "InfiUse is a multimodal LLM providing facility of content generation, code generation, code compiler and conversational chat.",
+      "Utilizes Groq Inference API and provides speedy results."
+    ],
+    liveDemo: "https://infiuse-3.onrender.com/",
+    sourceCode: "https://github.com/adityach007/InfiUse",
+    demoVideo: "/images/llm-video.mp4",
+    images: [
+      "/images/llm1.png",
+      "/images/llm2.png",
+      "/images/llm3.png",
+      "/images/llm4.png"
+    ]
+  },
+  {
+    id: 3,
+    title: "Fine-Tuning for Abstractive Text Summarization",
+    description: "Developed text summarization project using Transformers.",
+    image: "/images/transformers.svg",
+    category: "Web Development",
+    technologies: ["Hugging Face", "PyTorch", "NLTK", "Py7zr"],
+    features: [
+      "Fine-tuned pre-trained Pegasus model for abstractive text summarization on SAMSum dataset.",
+      "Evaluated model performance using ROUGE scores to measure quality of generated summaries."
+    ],
+    liveDemo: "",
+    sourceCode: "https://github.com/adityach007/Gen_AI/tree/main/Pegasus%20Fine-Tuning%20for%20Abstractive%20Text%20Summarization",
+    demoVideo: "",
+    images: [
+      "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+1",
+      "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+2",
+      "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+3"
+    ]
+  },
+  {
+    id: 4,
+    title: "WhatsApp Chat Analyzer",
+    description: "Analyze your WhatsApp chat conversations to gain insights into your messaging patterns and statistics.",
+    image: "/images/transformers.svg",
+    category: "Machine Learning",
+    technologies: ["re", "streamlit", "pandas", "numpy", "seaborn", "matplotlib", "urlextract", "wordcloud", "collections", "emoji"],
+    features: [
+      "Total Statistics: Get an overview of the total messages, media shared, and participants in the chat.",
+      "Monthly Timeline: Visualize message activity on a monthly basis to see how your conversations have evolved over time.",
+      "Daily Timeline: Explore the daily messaging patterns to understand when the most active times are.",
+      "Activity Map: View an interactive map displaying the geographical locations of participants during conversations.",
+      "Weekly Activity Heat Map: Understand the distribution of messages across different days of the week.",
+      "Most Busy User Graphs: Identify the most active participants and see how their engagement compares.",
+      "Word Cloud: Generate a word cloud to highlight the most frequently used words in the chat.",
+      "Emojis Usage Graph: Visualize the usage of emojis to understand the emotional context of the conversations."
+    ],
+    liveDemo: "",
+    sourceCode: "https://github.com/adityach007/Machine-Learning/tree/main/WhatsApp_Chat_Analyzer",
+    demoVideo: "",
+    images: [
+      "/images/ws1.png",
+      "/images/ws2.png",
+      "/images/ws3.png",
+      "/images/ws4.png",
+      "/images/ws5.png",
+      "/images/ws6.png",
+      "/images/ws7.png",
+      "/images/ws8.png",
+      "/images/ws9.png",
+      "/images/ws10.png",
+      "/images/ws11.png",
+    ]
+  }
+];
 
 const TabButton = ({ active, children, onClick, icon: Icon }) => (
   <motion.button
@@ -16,12 +126,18 @@ const TabButton = ({ active, children, onClick, icon: Icon }) => (
   </motion.button>
 );
 
-const ProjectPopup = ({ project, isOpen, onClose }) => {
+const ProjectPopup = ({ projectId, isOpen, onClose }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('overview');
   const videoRef = useRef(null);
   const [progress, setProgress] = useState(0);
+  const [explainerVisible, setExplainerVisible] = useState(false);
+  const [explanation, setExplanation] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Find the project based on the projectId
+  const project = demoProjects.find(p => p.id === projectId);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -59,6 +175,44 @@ const ProjectPopup = ({ project, isOpen, onClose }) => {
     );
   };
 
+  const generateExplanation = async () => {
+    if (!genAI) {
+      setExplanation("I'm sorry, the AI service is currently unavailable. Please try again later.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      
+      const prompt = `Please provide a detailed explanation of the following project:
+
+      Project Title: ${project.title}
+      Description: ${project.description}
+      Technologies Used: ${project.technologies.join(', ')}
+      Key Features: ${project.features.join(', ')}
+
+      Please explain the project's purpose, its technical implementation and possible future enhancements.`;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      setExplanation(response);
+    } catch (error) {
+      console.error('Error generating explanation:', error);
+      setExplanation("I'm sorry, I encountered an error while generating the explanation. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const toggleExplainer = () => {
+    if (!explainerVisible) {
+      setActiveTab('explainer');
+      generateExplanation();
+    }
+    setExplainerVisible(!explainerVisible);
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -73,7 +227,7 @@ const ProjectPopup = ({ project, isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-7xl max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-xl p-4 sm:p-6 w-full max-w-7xl max-h-[90vh] overflow-y-auto relative"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -150,6 +304,7 @@ const ProjectPopup = ({ project, isOpen, onClose }) => {
                   <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={Info}>Overview</TabButton>
                   <TabButton active={activeTab === 'technologies'} onClick={() => setActiveTab('technologies')} icon={Code}>Tech</TabButton>
                   <TabButton active={activeTab === 'gallery'} onClick={() => setActiveTab('gallery')} icon={Image}>Gallery</TabButton>
+                  <TabButton active={activeTab === 'explainer'} onClick={() => setActiveTab('explainer')} icon={MessageCircle}>Explainer</TabButton>
                 </div>
 
                 <motion.div 
@@ -184,7 +339,7 @@ const ProjectPopup = ({ project, isOpen, onClose }) => {
                             </motion.li>
                           ))}
                         </ul>
-                      </motion.div>
+                        </motion.div>
                     )}
 
                     {activeTab === 'technologies' && (
@@ -255,6 +410,25 @@ const ProjectPopup = ({ project, isOpen, onClose }) => {
                         </p>
                       </motion.div>
                     )}
+
+                    {activeTab === 'explainer' && (
+                      <motion.div
+                        key="explainer"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-indigo-700">Project Explainer</h3>
+                        {isLoading ? (
+                          <div className="flex justify-center items-center h-32">
+                            <Loader className="animate-spin text-indigo-600" size={32} />
+                          </div>
+                        ) : (
+                          <p className="text-sm sm:text-base text-gray-700 leading-relaxed whitespace-pre-wrap">{explanation}</p>
+                        )}
+                      </motion.div>
+                    )}
                   </AnimatePresence>
                 </motion.div>
               </motion.div>
@@ -293,6 +467,24 @@ const ProjectPopup = ({ project, isOpen, onClose }) => {
                 </motion.a>
               )}
             </motion.div>
+
+            {/* Jumping Explainer Button */}
+            <motion.button
+              className="absolute bottom-4 right-4 bg-indigo-600 text-white p-3 sm:p-4 rounded-full shadow-lg z-10"
+              onClick={toggleExplainer}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              animate={{
+                y: explainerVisible ? [0, -20, 0] : 0,
+              }}
+              transition={{
+                duration: 0.5,
+                repeat: explainerVisible ? Infinity : 0,
+                repeatType: "reverse",
+              }}
+            >
+              <MessageCircle size={24} />
+            </motion.button>
           </motion.div>
         </motion.div>
       )}

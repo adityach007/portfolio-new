@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope, FaArrowUp } from 'react-icons/fa';
-import { ChevronDown, Send, Menu, X, MessageCircle, Loader } from 'lucide-react';
+import { ChevronDown, Send, Menu, X, MessageCircle, Loader, Star } from 'lucide-react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import AboutSection from './AboutSection';
@@ -28,7 +28,7 @@ const ChatMessage = ({ message, isUser }) => (
     animate={{ opacity: 1, y: 0 }}
     className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}
   >
-    <div className={`${isUser ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} rounded-lg py-2 px-4 max-w-[70%] shadow-md`}>
+    <div className={`${isUser ? 'bg-indigo-600 text-white' : 'bg-white text-gray-800'} rounded-lg py-3 px-4 max-w-[80%] shadow-lg`}>
       {message}
     </div>
   </motion.div>
@@ -61,11 +61,13 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       
-      const prompt = `You are a helpful assistant for a personal portfolio website. The website contains information about Aditya Choudhary. Here's a comprehensive overview of the website content:
+      const prompt = `You are a helpful assistant for Aditya Choudhary's personal portfolio website. Here's a comprehensive overview of Aditya's background, skills, projects, and contact information:
 
-      ${websiteInfo}
+      ${JSON.stringify(websiteInfo, null, 2)}
 
-      Please answer the following question about the website or its content: ${userMessage}`;
+      Please provide a detailed and informative answer to the following question about Aditya Choudhary or the website content: ${userMessage}
+
+      If the question is not directly related to Aditya or the website content, politely redirect the conversation back to Aditya's portfolio or suggest asking about his skills, projects, or background.`;
 
       const result = await model.generateContent(prompt);
       const response = result.response.text();
@@ -81,18 +83,18 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
 
   return (
     <motion.div
-      className="fixed bottom-24 right-4 sm:right-8 w-11/12 sm:w-96 h-96 bg-white rounded-lg shadow-lg overflow-hidden z-50"
+      className="fixed bottom-24 right-4 sm:right-8 w-11/12 sm:w-96 h-[500px] bg-gradient-to-br from-indigo-600 to-purple-700 rounded-lg shadow-2xl overflow-hidden z-50"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
     >
-      <div className="flex justify-between items-center bg-indigo-600 text-white p-4">
-        <h3 className="font-semibold">Chat with AI Assistant</h3>
-        <button onClick={onClose} className="hover:bg-indigo-700 p-1 rounded-full transition-colors duration-300">
+      <div className="flex justify-between items-center bg-white bg-opacity-10 backdrop-blur-md text-white p-4">
+        <h3 className="font-bold text-lg">Chat with AI Assistant</h3>
+        <button onClick={onClose} className="hover:bg-white hover:bg-opacity-20 p-1 rounded-full transition-colors duration-300">
           <X size={20} />
         </button>
       </div>
-      <div ref={chatContainerRef} className="h-64 overflow-y-auto p-4">
+      <div ref={chatContainerRef} className="h-[380px] overflow-y-auto p-4 bg-gradient-to-b from-indigo-100 to-purple-100">
         {messages.map((message, index) => (
           <ChatMessage key={index} message={message.text} isUser={message.isUser} />
         ))}
@@ -102,19 +104,19 @@ const ChatBot = ({ isOpen, onClose, websiteInfo }) => {
           </div>
         )}
       </div>
-      <div className="p-4 border-t">
-        <div className="flex">
+      <div className="p-4 bg-white bg-opacity-10 backdrop-blur-md">
+        <div className="flex items-center bg-white rounded-full shadow-inner">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            className="flex-grow border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Ask about the website..."
+            className="flex-grow bg-transparent px-4 py-2 focus:outline-none text-gray-800 placeholder-gray-500"
+            placeholder="Ask about Aditya..."
           />
           <button
             onClick={handleSend}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-r-lg hover:bg-indigo-700 transition duration-300 disabled:opacity-50"
+            className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition duration-300 disabled:opacity-50 mr-1"
             disabled={isLoading}
           >
             {isLoading ? <Loader className="animate-spin" size={20} /> : <Send size={20} />}
@@ -180,7 +182,7 @@ const LandingPage = () => {
       title: "InfiUse",
       description: "A multi-functional LLM.",
       image: "/images/coding.svg",
-      category: "Web Development",
+      category: "Large Language Models",
       technologies: ["Python", "Streamlit", "Groq", "LangChain", "Codestral", "Streamlit Ace" ],
       features: [
         "InfiUse is a multimodal LLM providing facility of content generation, code generation, code compiler and conversational chat.",
@@ -201,7 +203,7 @@ const LandingPage = () => {
       title: "Fine-Tuning for Abstractive Text Summarization",
       description: "Developed text summarization project using Transformers.",
       image: "/images/transformers.svg",
-      category: "Web Development",
+      category: "Generative AI",
       technologies: ["Hugging Face", "PyTorch", "NLTK", "Py7zr"],
       features: [
         "Fine-tuned pre-trained Pegasus model for abstractive text summarization on SAMSum dataset.",
@@ -211,52 +213,147 @@ const LandingPage = () => {
       sourceCode: "https://github.com/adityach007/Gen_AI/tree/main/Pegasus%20Fine-Tuning%20for%20Abstractive%20Text%20Summarization",
       demoVideo: "",
       images: [
-        "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+1",
-        "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+2",
-        "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+3"
+        "https://via.placeholder.com/800x600?text=Summarization+Screenshot+1",
+        "https://via.placeholder.com/800x600?text=Summarization+Screenshot+2",
+        "https://via.placeholder.com/800x600?text=Summarization+Screenshot+3"
       ]
     },
+    {
+      id: 4,
+      title: "WhatsApp Chat Analyzer",
+      description: "Analyze your WhatsApp chat conversations to gain insights into your messaging patterns and statistics.",
+      image: "/images/transformers.svg",
+      category: "Machine Learning",
+      technologies: ["re", "streamlit", "pandas", "numpy", "seaborn", "matplotlib", "urlextract", "wordcloud", "collections", "emoji"],
+      features: [
+        "Total Statistics: Get an overview of the total messages, media shared, and participants in the chat.",
+        "Monthly Timeline: Visualize message activity on a monthly basis to see how your conversations have evolved over time.",
+        "Daily Timeline: Explore the daily messaging patterns to understand when the most active times are.",
+        "Activity Map: View an interactive map displaying the geographical locations of participants during conversations.",
+        "Weekly Activity Heat Map: Understand the distribution of messages across different days of the week.",
+        "Most Busy User Graphs: Identify the most active participants and see how their engagement compares.",
+        "Word Cloud: Generate a word cloud to highlight the most frequently used words in the chat.",
+        "Emojis Usage Graph: Visualize the usage of emojis to understand the emotional context of the conversations."
+      ],
+      liveDemo: "",
+      sourceCode: "https://github.com/adityach007/Machine-Learning/tree/main/WhatsApp_Chat_Analyzer",
+      demoVideo: "",
+      images: [
+        "/images/ws1.png",
+        "/images/ws2.png",
+        "/images/ws3.png",
+        "/images/ws4.png",
+        "/images/ws5.png",
+        "/images/ws6.png",
+        "/images/ws7.png",
+        "/images/ws8.png",
+        "/images/ws9.png",
+        "/images/ws10.png",
+        "/images/ws11.png",
+      ]
+    }
   ];
 
-  const websiteInfo = `
-    About Aditya Choudhary:
-    Aditya Choudhary is a passionate web developer and machine learning enthusiast. He combines a diverse range of technical skills with a passion for innovation and problem-solving to deliver exceptional web solutions.
-
-    Skills:
-    1. Front-end Development: HTML5, CSS3, JavaScript, React, Tailwind CSS
-    2. Back-end Development: Node.js, Python, SQL, MongoDB, Express.js, Django
-    3. DevOps & Tools: Git, AWS
-    4. Machine Learning: Machine Learning, Deep Learning, NLP, LLM
-    5. Soft Skills: Problem Solving, Team Collaboration, Agile Methodologies, Technical Writing, Mentoring
-
-    Projects:
-    1. Github-App
-       - Description: A GitHub-like app with authentication and repository exploration features.
-       - Technologies: React, Node.js, Express, MongoDB, Passport.js
-       - Key Features: GitHub authentication, user profile viewing, repository exploration
-
-    2. InfiUse
-       - Description: A multi-functional LLM for content generation, code generation, and conversational chat.
-       - Technologies: Python, Streamlit, Groq, LangChain, Codestral, Streamlit Ace
-       - Key Features: Content generation, code generation, code compiler, conversational chat
-
-    3. Fine-Tuning for Abstractive Text Summarization
-       - Description: Text summarization project using Transformers.
-       - Technologies: Hugging Face, PyTorch, NLTK, Py7zr
-       - Key Features: Fine-tuned Pegasus model, ROUGE score evaluation
-
-    Contact Information:
-    - Email: panwaraditya366@gmail.com
-    - GitHub: https://github.com/adityach007
-    - LinkedIn: 
-
-    Website Sections:
-    - Home: Introduction and call-to-action
-    - About: Detailed information about Aditya's background and interests
-    - Skills: Comprehensive list of technical and soft skills
-    - Projects: Showcase of key projects with details
-    - Contact: Form or information for getting in touch
-  `;
+  const websiteInfo = {
+    name: "Aditya Choudhary",
+    title: "Web Developer and Machine Learning Enthusiast",
+    about: "Aditya Choudhary is a passionate web developer and machine learning enthusiast with a strong foundation in both front-end and back-end technologies. He combines creativity with technical expertise to build innovative and efficient web solutions.",
+    education: [
+      {
+        degree: "Bachelor of Technology in Computer Science",
+        institution: "XYZ Institute of Technology",
+        year: "2019-2023"
+      }
+    ],
+    workExperience: [
+      {
+        year: "Oct 2023 – Nov 2023",
+        title: "Machine Learning Intern",
+        company: "Feynn Labs",
+        responsibilities: [
+          "Formulated in-depth market research on the electric vehicle (EV) industry in India, analyzing sales data, consumer preferences, and government policies, resulting in valuable insights into the Indian EV revolution."
+        ],
+        achievements: [
+          "Presented a model for defining the emotion of the tone in the form of audio."
+        ]
+      },
+      {
+        year: "Aug 2023 – Nov 2023",
+        title: "Full Stack Developer",
+        company: "Ethnus",
+        responsibilities: [
+          "Implemented MERN stack proficiency to drive the development of web applications.",
+          "Leveraged MongoDB, ExpressJS, ReactJS, and NodeJS to deliver seamless user experiences and boost user engagement",
+          "Collaborated with a virtual team to deliver high-quality solutions, honing skills in full-stack development, API integration, and agile methodologies."
+        ],
+        achievements: [
+          "Developed and deployed 3 full-stack applications, increasing team productivity by 25%",
+          "Optimized database queries, reducing load times by 40%"
+        ]
+      },
+    ],
+    skills: [
+      {
+        category: "Front-end Development",
+        description: "Creating responsive and intuitive user interfaces with modern web technologies.",
+        skills: [
+          { name: "HTML5", level: 90 },
+          { name: "CSS3", level: 90 },
+          { name: "JavaScript", level: 85 },
+          { name: "React", level: 75 },
+          { name: "Tailwind CSS", level: 80 },
+        ]
+      },
+      {
+        category: "Back-end Development",
+        description: "Building robust server-side applications and APIs to power web applications.",
+        skills: [
+          { name: "Node.js", level: 80 },
+          { name: "Python", level: 90 },
+          { name: "SQL", level: 75 },
+          { name: "MongoDB", level: 70 },
+          { name: "Express.js", level: 80 },
+        ]
+      },
+      {
+        category: "DevOps & Tools",
+        description: "Streamlining development processes and ensuring smooth deployment and operation.",
+        skills: [
+          { name: "Git", level: 85 },
+          { name: "AWS", level: 75 },
+        ]
+      },
+      {
+        category: "Machine Learning",
+        description: "Exploring and implementing cutting-edge technologies to stay ahead of the curve.",
+        skills: [
+          { name: "Machine Learning", level: 95 },
+          { name: "Deep Learning", level: 85},
+          { name: "NLP", level: 80},
+          { name: "LLM", level: 70}
+        ]
+      },
+      {
+        category: "Soft Skills",
+        description: "Complementing technical skills with essential professional attributes.",
+        skills: [
+          { name: "Problem Solving", level: 90 },
+          { name: "Team Collaboration", level: 95 },
+          { name: "Technical Writing", level: 80 },
+          { name: "Mentoring", level: 85 }
+        ]
+      },
+    ],
+    projects: projects,
+    contactInfo: {
+      email: "panwaraditya366@gmail.com",
+      github: "https://github.com/adityach007",
+      linkedin: "www.linkedin.com/in/adityachoudhary007"
+    },
+    achievements: [
+      ""
+    ]
+  };
 
   const handleProjectClick = (project) => {
     setSelectedProject(project);
@@ -283,7 +380,15 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-          <a className="font-bold text-2xl text-indigo-600" href="#" onClick={() => scrollToSection('home')}>AC</a>
+          <motion.a 
+            className="font-bold text-2xl text-indigo-600"
+            href="#"
+            onClick={() => scrollToSection('home')}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            AC
+          </motion.a>
           <div className="hidden md:flex space-x-6">
             {navItems.map((item) => (
               <motion.button 
@@ -339,7 +444,7 @@ const LandingPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Hi, I'm <span className="text-indigo-600">Aditya Choudhary</span>
+          Hi, I'm <span className="text-indigo-600">{websiteInfo.name}</span>
         </motion.h1>
         <motion.p 
           className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-600"
@@ -347,7 +452,7 @@ const LandingPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          A passionate web developer and machine learning enthusiast
+          {websiteInfo.title}
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -384,19 +489,19 @@ const LandingPage = () => {
 
       {/* Other Sections */}
       <section id="about">
-        <AboutSection />
+        <AboutSection info={websiteInfo} />
       </section>
       <section id="skills">
-        <SkillsSection />
+        <SkillsSection skills={websiteInfo.skills} />
       </section>
       <section id="projects">
         <ProjectsSection 
-          projects={projects}
+          projects={websiteInfo.projects}
           handleProjectClick={handleProjectClick}
         />
       </section>
       <section id="contact">
-        <ContactSection />
+        <ContactSection contactInfo={websiteInfo.contactInfo} />
       </section>
 
       <Footer />
@@ -420,12 +525,12 @@ const LandingPage = () => {
 
       {/* Chat Bot Button */}
       <motion.button
-        className="fixed bottom-8 left-4 sm:left-8 bg-indigo-600 text-white p-3 rounded-full shadow-lg z-50"
+        className="fixed bottom-8 left-4 sm:left-8 bg-indigo-600 text-white p-4 rounded-full shadow-lg z-50"
         onClick={() => setIsChatOpen(!isChatOpen)}
         whileHover={{ scale: 1.1, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
         whileTap={{ scale: 0.9 }}
       >
-        <MessageCircle size={24} />
+        <MessageCircle size={28} />
       </motion.button>
 
       {/* Chat Bot */}
@@ -435,7 +540,7 @@ const LandingPage = () => {
         )}
       </AnimatePresence>
 
-        {/* Project Popup */}
+      {/* Project Popup */}
       <ProjectPopup
         project={selectedProject}
         isOpen={isPopupOpen}
@@ -449,6 +554,64 @@ const LandingPage = () => {
           <p>Please check your environment variables and restart the application.</p>
         </div>
       )}
+
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-24 right-4 sm:right-8 flex flex-col space-y-4">
+        <motion.a
+          href={websiteInfo.contactInfo.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-gray-800 text-white p-3 rounded-full shadow-lg"
+          whileHover={{ scale: 1.1, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <FaGithub size={20} />
+        </motion.a>
+        <motion.a
+          href={websiteInfo.contactInfo.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-blue-600 text-white p-3 rounded-full shadow-lg"
+          whileHover={{ scale: 1.1, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <FaLinkedin size={20} />
+        </motion.a>
+        <motion.a
+          href={`mailto:${websiteInfo.contactInfo.email}`}
+          className="bg-red-500 text-white p-3 rounded-full shadow-lg"
+          whileHover={{ scale: 1.1, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <FaEnvelope size={20} />
+        </motion.a>
+      </div>
+
+      {/* Floating Stars */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-yellow-400"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+              scale: Math.random() * 0.5 + 0.5,
+            }}
+            animate={{
+              y: [0, -10, 0],
+              opacity: [1, 0.5, 1],
+            }}
+            transition={{
+              duration: Math.random() * 2 + 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <Star size={12} />
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };

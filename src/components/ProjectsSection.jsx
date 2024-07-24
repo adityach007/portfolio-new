@@ -1,7 +1,107 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, ChevronDown, ChevronUp, Filter, RefreshCw, ExternalLink } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Filter, RefreshCw, ExternalLink, Code } from 'lucide-react';
+import ProjectPopup from './ProjectPopup'; // Make sure to import the ProjectPopup component
 
+// Demo projects data (same as in the previous code)
+const demoProjects = [
+  {
+    id: 1,
+    title: "Github-App",
+    description: "A look like github app performing some great features.",
+    image: "/images/github.svg",
+    category: "Web Development",
+    technologies: ["React", "Node.js", "Express", "MongoDB", "Passport.js"],
+    features: [
+      "Implemented Github like app with authenticated with Github using passport.js.",
+      "Facility to view the user profile with all their repositories.",
+      "Provide facility to like user profile and explore Github repositories of languages and integrated with MongoDB."
+    ],
+    liveDemo: "",
+    sourceCode: "https://github.com/adityach007/github-app",
+    demoVideo: "/images/Github-app.mp4",
+    images: [
+      "/images/github1.png",
+      "/images/github2.png",
+      "/images/github3.png"
+    ]
+  },
+  {
+    id: 2,
+    title: "InfiUse",
+    description: "A multi-functional LLM.",
+    image: "/images/coding.svg",
+    category: "Web Development",
+    technologies: ["Python", "Streamlit", "Groq", "LangChain", "Codestral", "Streamlit Ace" ],
+    features: [
+      "InfiUse is a multimodal LLM providing facility of content generation, code generation, code compiler and conversational chat.",
+      "Utilizes Groq Inference API and provides speedy results."
+    ],
+    liveDemo: "https://infiuse-3.onrender.com/",
+    sourceCode: "https://github.com/adityach007/InfiUse",
+    demoVideo: "/images/llm-video.mp4",
+    images: [
+      "/images/llm1.png",
+      "/images/llm2.png",
+      "/images/llm3.png",
+      "/images/llm4.png"
+    ]
+  },
+  {
+    id: 3,
+    title: "Fine-Tuning for Abstractive Text Summarization",
+    description: "Developed text summarization project using Transformers.",
+    image: "/images/transformers.svg",
+    category: "Web Development",
+    technologies: ["Hugging Face", "PyTorch", "NLTK", "Py7zr"],
+    features: [
+      "Fine-tuned pre-trained Pegasus model for abstractive text summarization on SAMSum dataset.",
+      "Evaluated model performance using ROUGE scores to measure quality of generated summaries."
+    ],
+    liveDemo: "",
+    sourceCode: "https://github.com/adityach007/Gen_AI/tree/main/Pegasus%20Fine-Tuning%20for%20Abstractive%20Text%20Summarization",
+    demoVideo: "",
+    images: [
+      "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+1",
+      "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+2",
+      "https://via.placeholder.com/800x600?text=E-commerce+Screenshot+3"
+    ]
+  },
+  {
+    id: 4,
+    title: "WhatsApp Chat Analyzer",
+    description: "Analyze your WhatsApp chat conversations to gain insights into your messaging patterns and statistics.",
+    image: "/images/whatsapp (1).svg",
+    category: "Machine Learning",
+    technologies: ["re", "streamlit", "pandas", "numpy", "seaborn", "matplotlib", "urlextract", "wordcloud", "collections", "emoji"],
+    features: [
+      "Total Statistics: Get an overview of the total messages, media shared, and participants in the chat.",
+      "Monthly Timeline: Visualize message activity on a monthly basis to see how your conversations have evolved over time.",
+      "Daily Timeline: Explore the daily messaging patterns to understand when the most active times are.",
+      "Activity Map: View an interactive map displaying the geographical locations of participants during conversations.",
+      "Weekly Activity Heat Map: Understand the distribution of messages across different days of the week.",
+      "Most Busy User Graphs: Identify the most active participants and see how their engagement compares.",
+      "Word Cloud: Generate a word cloud to highlight the most frequently used words in the chat.",
+      "Emojis Usage Graph: Visualize the usage of emojis to understand the emotional context of the conversations."
+    ],
+    liveDemo: "",
+    sourceCode: "https://github.com/adityach007/Machine-Learning/tree/main/WhatsApp_Chat_Analyzer",
+    demoVideo: "",
+    images: [
+      "/images/ws1.png",
+      "/images/ws2.png",
+      "/images/ws3.png",
+      "/images/ws4.png",
+      "/images/ws5.png",
+      "/images/ws6.png",
+      "/images/ws7.png",
+      "/images/ws8.png",
+      "/images/ws9.png",
+      "/images/ws10.png",
+      "/images/ws11.png",
+    ]
+  }
+];
 
 const ProjectCard = ({ project, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -10,7 +110,7 @@ const ProjectCard = ({ project, onClick }) => {
     <motion.div
       className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer h-full flex flex-col transform transition-all duration-300"
       whileHover={{ scale: 1.03, boxShadow: "0 10px 30px rgba(0,0,0,0.15)" }}
-      onClick={() => onClick(project)}
+      onClick={() => onClick(project.id)}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       layout
@@ -52,7 +152,7 @@ const ProjectCard = ({ project, onClick }) => {
           )}
           {project.sourceCode && (
             <a href={project.sourceCode} target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-800 flex items-center" onClick={(e) => e.stopPropagation()}>
-              {/* <FaGitHub size={16} className="mr-1" /> */}
+              <Code size={16} className="mr-1" />
               Source Code
             </a>
           )}
@@ -62,27 +162,39 @@ const ProjectCard = ({ project, onClick }) => {
   );
 };
 
-const ProjectsSection = ({ projects, handleProjectClick }) => {
-  const [filteredProjects, setFilteredProjects] = useState(projects);
+const ProjectsSection = () => {
+  const [filteredProjects, setFilteredProjects] = useState(demoProjects);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTech, setSelectedTech] = useState('All');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const allTechnologies = ['All', ...new Set(projects.flatMap(project => project.technologies))];
+  const allTechnologies = ['All', ...new Set(demoProjects.flatMap(project => project.technologies))];
 
   useEffect(() => {
-    const results = projects.filter(project =>
+    const results = demoProjects.filter(project =>
       (project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.technologies.some(tech => tech.toLowerCase().includes(searchTerm.toLowerCase()))) &&
       (selectedTech === 'All' || project.technologies.includes(selectedTech))
     );
     setFilteredProjects(results);
-  }, [searchTerm, selectedTech, projects]);
+  }, [searchTerm, selectedTech]);
 
   const resetFilters = () => {
     setSearchTerm('');
     setSelectedTech('All');
+  };
+
+  const handleProjectClick = (projectId) => {
+    setSelectedProject(projectId);
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+    setSelectedProject(null);
   };
 
   return (
@@ -203,9 +315,20 @@ const ProjectsSection = ({ projects, handleProjectClick }) => {
             </motion.button>
           </motion.div>
         )}
+
+        {/* Project Popup */}
+        <ProjectPopup
+          projectId={selectedProject}
+          isOpen={isPopupOpen}
+          onClose={closePopup}
+        />
       </div>
     </section>
   );
 };
 
 export default ProjectsSection;
+
+
+
+
