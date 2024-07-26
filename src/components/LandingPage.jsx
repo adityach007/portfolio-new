@@ -261,8 +261,8 @@ const LandingPage = () => {
     education: [
       {
         degree: "Bachelor of Technology in Computer Science",
-        institution: "XYZ Institute of Technology",
-        year: "2019-2023"
+        institution: "Vellore Institute of Technology Chennai",
+        year: "2021-2025"
       }
     ],
     workExperience: [
@@ -287,8 +287,7 @@ const LandingPage = () => {
           "Collaborated with a virtual team to deliver high-quality solutions, honing skills in full-stack development, API integration, and agile methodologies."
         ],
         achievements: [
-          "Developed and deployed 3 full-stack applications, increasing team productivity by 25%",
-          "Optimized database queries, reducing load times by 40%"
+          ""
         ]
       },
     ],
